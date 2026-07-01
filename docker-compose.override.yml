@@ -1,0 +1,77 @@
+version: '3.8'
+
+# Development override - enables hot reload, debugging, and local mounts
+
+services:
+  api_gateway:
+    build:
+      context: .
+      dockerfile: services/api_gateway/Dockerfile
+    volumes:
+      - ./services/api_gateway/app:/app/app
+      - ./services/api_gateway/requirements.txt:/app/requirements.txt
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  vision_pipeline:
+    build:
+      context: .
+      dockerfile: services/vision_pipeline/Dockerfile
+    volumes:
+      - ./services/vision_pipeline:/app
+      - ./models:/models
+    environment:
+      - ENVIRONMENT=development
+      - USE_CUDA=false
+    # Uncomment to enable GPU support (requires NVIDIA Container Toolkit)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+  stream_processor_worker:
+    build:
+      context: .
+      dockerfile: workers/Dockerfile
+    volumes:
+      - ./workers:/app
+    environment:
+      - ENVIRONMENT=development
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3001:80"
+    environment:
+      - NODE_ENV=development
+
+  postgres:
+    ports:
+      - "5432:5432"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  minio:
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  prometheus:
+    ports:
+      - "9090:9090"
+
+  grafana:
+    ports:
+      - "3000:3000"

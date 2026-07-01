@@ -1,0 +1,12 @@
+opencv-python-headless==4.9.0.80
+onnxruntime==1.17.0
+torch==2.2.0
+torchvision==0.17.0
+torchaudio==2.2.0
+librosa==0.10.2
+numpy==1.26.4
+dlcl==0.0.5
+pydantic==2.5.3
+pydantic-settings==2.1.0
+asyncio-mqtt==0.13.0
+python-multipart==0.0.6
